@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>点击数字</title>
+    <style>
+        .ibutton{
+            margin-top:10px;
+            margin-left: 10px ;
+            color:#fff;
+            border:1px solid #8a6de9;
+            background-color: #8a6de9;
+            font-size: 14px;
+            padding:6px 12px;
+            border-radius: 7px;
+            width: 50px ;
+            height: 40px;
+        }
+        div:after{
+            content:none;
+            display:block;
+            clear:both;
+        }
+    </style>
+</head>
+<body>
+<div id="play">
+    <p>输入数字，点击开始，会生成对应输入数字的表格，从表格中数字1开始点击，按顺序点击到最后</p>
+    <input type="number" v-model="num">
+    <button v-on:click="arr">开始</button>
+    <div v-for="(item,index) in list">
+        <template v-if="index % num == 0 && index!=0"><br><br><br></template>
+        <div style="float:left">
+            <button class="ibutton" v-on:click="time(item)">{{item}}</button>
+        </div>
+    </div>
+</div>
+<script src="js/vue.js"></script>
+<script>
+    var vm = new Vue({
+        el:"#play",
+        data:{
+            num:2,
+            list:[],
+            startTime:0,
+            endTime:0,
+            checkNum:0
+        },
+        methods:{
+            arr:function () {
+                if(this.num > 10){
+                    alert("数值过大，浏览器会死掉，最好不要大于10")
+                    return;
+                }
+                this.checkNum = 0;
+                var arrlength = this.num * this.num;
+                var arr = new Array(arrlength);
+                var index = 0;
+                for (var i = 1; i <= arrlength; i++){
+                    var num = Math.random();
+                    num = Math.ceil(num * arrlength);
+                    if(arr[0] != 0){
+                        var flag = false;
+                        for (var j = 0; j<arr.length; j++){
+                            if(num != arr[j]){
+                                flag = true;
+                            }else {
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if(flag == true){
+                            arr[index++] = num;
+                        }else{
+                            i--;
+                        }
+                    }else {
+                        arr[index++] = num;
+                    }
+                }
+                this.list = arr;
+            },
+            time:function (item) {
+                if(this.checkNum+1 != item){//保证按顺序点击
+                    alert("game over");
+                    this.checkNum = 0;
+                    return;
+                }
+                var date = new Date();
+                if(item == 1){
+                    this.startTime = date.getTime();
+                }
+                if (item == this.num * this.num ){
+                    this.endTime = date.getTime();
+                    var useTime = ((this.endTime - this.startTime)/1000).toFixed(2);
+                    alert("使用了"+useTime+"秒");
+                    this.checkNum = 0;
+                    return ;
+                }
+                this.checkNum = item;
+            }
+        }
+
+    })
+</script>
+</body>
+</html>
